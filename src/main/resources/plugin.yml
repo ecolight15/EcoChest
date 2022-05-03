@@ -1,0 +1,12 @@
+name: EcoChest
+main: jp.minecraftuser.ecolight.ecochest.EcoChest
+version: ${project.version}
+api-version: 1.18
+depend: [EcoFramework, LWC]
+commands:
+  ec:
+    description: ecochest command.
+    usage: /<command> function...
+  ec reload:
+    description: Reload ecochest configuration file command.
+    usage: /<command>
