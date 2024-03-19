@@ -106,7 +106,7 @@ public class ChestTransaction
   private String makeItemStackString(ItemStack item)
   {
     StringBuilder sb = new StringBuilder();
-    sb.append(item.getType().toString() + "(" + item.getType().toString() + ":" + item.getData() + ")");
+    sb.append(item.getType());
     Map<Enchantment, Integer> enchantments = item.getEnchantments();
     if (enchantments == null) {
       return sb.toString();

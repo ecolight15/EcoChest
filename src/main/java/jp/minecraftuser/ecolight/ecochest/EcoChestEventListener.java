@@ -176,7 +176,7 @@ public class EcoChestEventListener
     }
     ((ChestTransaction)transaction.get(pl)).setOpened(true);
   }
-  
+  @EventHandler(priority=EventPriority.LOWEST)
   public void InventoryClose(InventoryCloseEvent event)
   {
     if ((event.getInventory().getType() != InventoryType.CHEST) && (event.getInventory().getType() != InventoryType.DISPENSER) && (event.getInventory().getType() != InventoryType.FURNACE) && (event.getInventory().getType() != InventoryType.BREWING) && (event.getInventory().getType() != InventoryType.HOPPER)) {
