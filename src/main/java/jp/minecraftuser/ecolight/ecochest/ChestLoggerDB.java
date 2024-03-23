@@ -9,10 +9,17 @@ import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class ChestLoggerDB
 {
   private Connection con = null;
+
+  private BlockingQueue<ChestLogEntry> logQueue = new LinkedBlockingQueue<>();
+  private ExecutorService executorService = Executors.newSingleThreadExecutor();
   
   public ChestLoggerDB(EcoChest plg)
   {
@@ -37,6 +44,19 @@ public class ChestLoggerDB
     {
       m.Warn("DBシステム異常:" + ex.getMessage());
     }
+    //非同期処理
+    executorService.submit(() -> {
+      while (!Thread.currentThread().isInterrupted()) {
+        try {
+          //take()にて要素が追加されるまで待機して、追加された場合は要素の値をentryに設定して要素を削除
+          ChestLogEntry entry = logQueue.take();
+          //上記の要素をDBに書き込み
+          actLoggingDB(entry.getLocation(), entry.getPlayer(), entry.getAction());
+        } catch (InterruptedException e) {
+          e.printStackTrace();
+        }
+      }
+    });
   }
   
   public void ChestLoggerDB_()
@@ -59,8 +79,16 @@ public class ChestLoggerDB
       m.Warn("DBシステム異常:" + ex.getMessage());
     }
   }
-  
   public void actLogging(String location, String player, String act)
+  {
+    try {
+      logQueue.put(new ChestLogEntry(location,player,act));
+    } catch (InterruptedException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  private void actLoggingDB(String location, String player, String act)
   {
     if (this.con == null) {
       return;
